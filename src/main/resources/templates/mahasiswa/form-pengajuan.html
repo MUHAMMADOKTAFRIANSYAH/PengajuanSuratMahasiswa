@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulir Pengajuan Surat Mahasiswa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+  <!-- Header Banner -->
+  <div class="bg-primary text-white py-4">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <span class="badge bg-white bg-opacity-20 text-white rounded-pill mb-2 px-3 py-1">Fitur 1: Layanan Mahasiswa</span>
+          <h2 class="fw-bold mb-1">Formulir Pengajuan Surat Mahasiswa</h2>
+          <p class="text-white-50 mb-0">Isi data identitas dan detail surat keterangan yang Anda butuhkan secara lengkap.</p>
+        </div>
+        <div>
+          <a th:href="@{/mahasiswa/lacak}" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold">
+            <i class="bi bi-search me-1"></i> Cek Status Pengajuan Sebelumnya
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container my-5">
+
+    <!-- Alert Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <span th:text="${errorMessage}">Pesan Kesalahan</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row g-4">
+      <!-- Form Input -->
+      <div class="col-lg-8">
+        <div class="glass-card p-4 p-md-5">
+          <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+            <div class="bg-primary-subtle text-primary p-3 rounded-circle fs-4">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-0">Data Permohonan Surat</h4>
+              <p class="text-muted small mb-0">Pastikan data NIM dan nama sesuai dengan data Sistem Akademik.</p>
+            </div>
+          </div>
+
+          <form th:action="@{/mahasiswa/pengajuan/simpan}" th:object="${pengajuan}" method="post">
+            
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="nama" class="form-label">Nama Lengkap Mahasiswa <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                  <input type="text" id="nama" th:field="*{nama}" class="form-control" placeholder="Contoh: Ahmad Fauzi" required>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="nim" class="form-label">Nomor Induk Mahasiswa (NIM) <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted"><i class="bi bi-card-text"></i></span>
+                  <input type="text" id="nim" th:field="*{nim}" class="form-control" placeholder="Contoh: 220101001" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="programStudi" class="form-label">Program Studi</label>
+                <select id="programStudi" th:field="*{programStudi}" class="form-select">
+                  <option value="Teknik Informatika">Teknik Informatika</option>
+                  <option value="Sistem Informasi">Sistem Informasi</option>
+                  <option value="Teknologi Informasi">Teknologi Informasi</option>
+                  <option value="Ilmu Komputer">Ilmu Komputer</option>
+                  <option value="Sains Data">Sains Data</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="semester" class="form-label">Semester Saat Ini</label>
+                <select id="semester" th:field="*{semester}" class="form-select">
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5" selected>Semester 5</option>
+                  <option value="6">Semester 6</option>
+                  <option value="7">Semester 7</option>
+                  <option value="8">Semester 8</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="jenisSurat" class="form-label">Jenis Surat Keterangan <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-file-earmark-check"></i></span>
+                <select id="jenisSurat" th:field="*{jenisSurat}" class="form-select" required>
+                  <option value="" disabled selected>-- Pilih Jenis Surat Keterangan --</option>
+                  <option value="Surat Keterangan Aktif Kuliah">Surat Keterangan Aktif Kuliah (Untuk BPJS, Beasiswa, Tunjangan Ortu)</option>
+                  <option value="Surat Pengantar Magang / PKL">Surat Pengantar Magang / PKL (Ke Instansi/Perusahaan)</option>
+                  <option value="Surat Rekomendasi Beasiswa">Surat Rekomendasi Beasiswa / Lomba Prestasi</option>
+                  <option value="Surat Keterangan Cuti Akademik">Surat Keterangan Cuti Akademik</option>
+                  <option value="Surat Keterangan Bebas Tanggungan">Surat Keterangan Bebas Tanggungan Perpustakaan & Laboratorium</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="keperluan" class="form-label">Alasan / Keperluan Pengajuan <span class="text-danger">*</span></label>
+              <textarea id="keperluan" th:field="*{keperluan}" rows="4" class="form-control" 
+                        placeholder="Tuliskan secara jelas keperluan pengajuan surat ini (Contoh: Pengajuan persyaratan beasiswa Bank Indonesia tahun 2026 atau magang kerja di PT...)" required></textarea>
+              <div class="form-text text-muted">
+                Berikan penjelasan yang spesifik agar mempermudah petugas administrasi dalam memverifikasi dan menyetujui pengajuan Anda.
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top">
+              <a th:href="@{/}" class="btn btn-light rounded-pill px-4 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Batal
+              </a>
+              <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                <i class="bi bi-send-fill"></i> Kirim Pengajuan Surat
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Informasi & Petunjuk Samping -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+          <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-info-circle-fill text-primary"></i> Panduan Pengajuan
+          </h5>
+          <ol class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+            <li>Isi identitas diri (Nama &amp; NIM) dengan benar.</li>
+            <li>Pilih jenis surat sesuai kebutuhan administrasi Anda.</li>
+            <li>Jelaskan tujuan atau alasan pengajuan secara rinci.</li>
+            <li>Setelah formulir dikirim, sistem akan menyimpan permohonan dengan status <strong class="text-warning">Menunggu Pemeriksaan</strong>.</li>
+            <li>Petugas akademik akan meninjau dan menentukan apakah pengajuan <strong class="text-success">Disetujui</strong> atau <strong class="text-danger">Ditolak</strong>.</li>
+          </ol>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="fs-2 text-white"><i class="bi bi-lightning-charge-fill"></i></div>
+            <h6 class="fw-bold mb-0">Arsitektur Penyimpanan</h6>
+          </div>
+          <p class="small text-white-50 mb-0">
+            Aplikasi berjalan menggunakan penyimpanan in-memory <code class="text-white bg-black bg-opacity-25 px-1 rounded">ArrayList</code> Java tanpa database eksternal. Data akan terus tersedia selama server berjalan.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div th:replace="~{fragments/footer :: footer}"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

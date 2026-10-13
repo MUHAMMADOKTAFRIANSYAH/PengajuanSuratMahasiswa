@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lacak Status Pengajuan Surat Mahasiswa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+  <!-- Header Banner -->
+  <div class="bg-primary text-white py-4">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <span class="badge bg-white bg-opacity-20 text-white rounded-pill mb-2 px-3 py-1">Fitur 4: Hasil Pengajuan Mahasiswa</span>
+          <h2 class="fw-bold mb-1">Lacak &amp; Status Pengajuan Surat</h2>
+          <p class="text-white-50 mb-0">Pantau proses verifikasi permohonan surat Anda secara transparan.</p>
+        </div>
+        <div>
+          <a th:href="@{/mahasiswa/pengajuan/baru}" class="btn btn-light rounded-pill px-4 py-2 fw-semibold text-primary">
+            <i class="bi bi-pencil-square me-1"></i> Buat Pengajuan Baru
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container my-5">
+
+    <!-- Flash Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      <span th:text="${successMessage}">Pengajuan Berhasil</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <span th:text="${errorMessage}">Pesan Kesalahan</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Search Box -->
+    <div class="glass-card p-4 mb-4">
+      <form th:action="@{/mahasiswa/lacak}" method="get" class="row g-3 align-items-center">
+        <div class="col-md-9">
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted"><i class="bi bi-search"></i></span>
+            <input type="text" name="keyword" th:value="${keyword}" class="form-control" 
+                   placeholder="Masukkan NIM, Nama Mahasiswa, atau Nomor Pengajuan (contoh: 220101001 atau SRT-2026-101)...">
+          </div>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-primary w-100 rounded-pill fw-semibold">
+            Cari Pengajuan
+          </button>
+          <a th:href="@{/mahasiswa/lacak}" class="btn btn-outline-secondary rounded-pill px-3" title="Reset filter">
+            <i class="bi bi-arrow-clockwise"></i>
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Hasil Pengajuan Cards -->
+    <div th:if="${#lists.isEmpty(daftarPengajuan)}" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+      <div class="display-4 text-muted mb-3"><i class="bi bi-inbox"></i></div>
+      <h5 class="fw-bold text-dark">Tidak Ada Pengajuan Ditemukan</h5>
+      <p class="text-muted small mb-4">Belum ada data pengajuan surat dengan kata kunci tersebut.</p>
+      <div>
+        <a th:href="@{/mahasiswa/pengajuan/baru}" class="btn btn-primary rounded-pill px-4">
+          <i class="bi bi-plus-lg me-1"></i> Ajukan Surat Sekarang
+        </a>
+      </div>
+    </div>
+
+    <div class="row g-4" th:if="${!#lists.isEmpty(daftarPengajuan)}">
+      <div class="col-lg-6" th:each="surat : ${daftarPengajuan}">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column">
+          
+          <!-- Card Header -->
+          <div class="d-flex align-items-start justify-content-between mb-3 border-bottom pb-3">
+            <div>
+              <span class="badge bg-light text-secondary border font-monospace mb-1" th:text="${surat.id}">SRT-001</span>
+              <h5 class="fw-bold text-dark mb-0" th:text="${surat.jenisSurat}">Surat Keterangan Aktif Kuliah</h5>
+            </div>
+            <span class="badge-status" th:classappend="'badge-status-' + ${surat.status.name()}">
+              <i class="bi" th:classappend="${surat.status.name() == 'MENUNGGU_PEMERIKSAAN' ? 'bi-clock-history' : (surat.status.name() == 'DISETUJUI' ? 'bi-check-circle-fill' : 'bi-x-circle-fill')}"></i>
+              <span th:text="${surat.status.label}">Status</span>
+            </span>
+          </div>
+
+          <!-- Student Info -->
+          <div class="mb-3">
+            <div class="row g-2 small">
+              <div class="col-6">
+                <span class="text-muted">Nama:</span>
+                <div class="fw-bold text-dark" th:text="${surat.nama}">Ahmad Fauzi</div>
+              </div>
+              <div class="col-6">
+                <span class="text-muted">NIM:</span>
+                <div class="fw-bold text-dark font-monospace" th:text="${surat.nim}">220101001</div>
+              </div>
+              <div class="col-6">
+                <span class="text-muted">Program Studi:</span>
+                <div class="fw-medium text-dark" th:text="${surat.programStudi != null ? surat.programStudi : '-'}">Teknik Informatika</div>
+              </div>
+              <div class="col-6">
+                <span class="text-muted">Tanggal Diajukan:</span>
+                <div class="fw-medium text-dark" th:text="${surat.formattedTanggalPengajuan}">12 Okt 2026</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Keperluan / Alasan Pengajuan -->
+          <div class="bg-light p-3 rounded-3 mb-3 small">
+            <span class="fw-semibold text-secondary d-block mb-1"><i class="bi bi-chat-left-quote me-1"></i> Keperluan Pengajuan:</span>
+            <span class="text-dark" th:text="${surat.keperluan}">Keperluan pengajuan beasiswa</span>
+          </div>
+
+          <!-- Hasil Pemeriksaan Petugas (Jika Disetujui atau Ditolak) -->
+          <div th:if="${surat.status.name() == 'DISETUJUI'}" class="p-3 bg-success-subtle border border-success-subtle rounded-3 mb-3 small">
+            <div class="fw-bold text-success mb-1 d-flex align-items-center gap-1">
+              <i class="bi bi-check-circle-fill"></i> Pengajuan Disetujui Petugas
+            </div>
+            <div class="text-dark mb-1" th:if="${surat.nomorSuratResmi}">
+              No. Surat Resmi: <span class="fw-bold font-monospace text-primary" th:text="${surat.nomorSuratResmi}">045/BAA/FTI/X/2026</span>
+            </div>
+            <div class="text-muted small" th:if="${surat.catatanPetugas}">
+              Catatan: "<span th:text="${surat.catatanPetugas}"></span>"
+            </div>
+            <div class="text-muted mt-1 small" th:if="${surat.formattedTanggalPemeriksaan != '-'}">
+              Diperiksa pada: <span th:text="${surat.formattedTanggalPemeriksaan}"></span>
+            </div>
+          </div>
+
+          <div th:if="${surat.status.name() == 'DITOLAK'}" class="p-3 bg-danger-subtle border border-danger-subtle rounded-3 mb-3 small">
+            <div class="fw-bold text-danger mb-1 d-flex align-items-center gap-1">
+              <i class="bi bi-x-circle-fill"></i> Pengajuan Ditolak Petugas
+            </div>
+            <div class="text-danger fw-medium">
+              Alasan Penolakan: "<span th:text="${surat.catatanPetugas}"></span>"
+            </div>
+            <div class="text-muted mt-1 small" th:if="${surat.formattedTanggalPemeriksaan != '-'}">
+              Diperiksa pada: <span th:text="${surat.formattedTanggalPemeriksaan}"></span>
+            </div>
+          </div>
+
+          <div th:if="${surat.status.name() == 'MENUNGGU_PEMERIKSAAN'}" class="p-3 bg-warning-subtle border border-warning-subtle rounded-3 mb-3 small">
+            <div class="fw-bold text-warning-emphasis d-flex align-items-center gap-1">
+              <i class="bi bi-hourglass-split"></i> Sedang Menunggu Pemeriksaan Petugas Administrasi
+            </div>
+            <p class="text-muted mb-0 mt-1 small">
+              Permohonan Anda telah masuk ke dalam antrean sistem. Petugas administrasi akan memeriksa kelengkapan data.
+            </p>
+          </div>
+
+          <!-- Action Footer -->
+          <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">
+              Status Terkini: <strong th:text="${surat.status.label}"></strong>
+            </span>
+            <div th:if="${surat.status.name() == 'DISETUJUI'}">
+              <a th:href="@{'/mahasiswa/surat/' + ${surat.id} + '/cetak'}" class="btn btn-success btn-sm rounded-pill px-3 fw-semibold">
+                <i class="bi bi-printer me-1"></i> Cetak Surat Resmi
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div th:replace="~{fragments/footer :: footer}"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

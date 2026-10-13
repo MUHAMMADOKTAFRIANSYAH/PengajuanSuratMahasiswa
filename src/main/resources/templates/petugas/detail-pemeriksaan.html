@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pemeriksaan Surat Mahasiswa - Panel Petugas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+  <div class="bg-dark text-white py-4">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 text-white-50 small">
+              <li class="breadcrumb-item"><a th:href="@{/petugas}" class="text-white-50 text-decoration-none">Panel Petugas</a></li>
+              <li class="breadcrumb-item active text-white" aria-current="page">Pemeriksaan Surat</li>
+            </ol>
+          </nav>
+          <h2 class="fw-bold mb-1">
+            Pemeriksaan Pengajuan: <span class="text-primary" th:text="${surat.id}">SRT-001</span>
+          </h2>
+          <p class="text-white-50 mb-0">Verifikasi berkas mahasiswa dan tentukan keputusan persetujuan.</p>
+        </div>
+        <div>
+          <a th:href="@{/petugas}" class="btn btn-outline-light rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container my-5">
+
+    <!-- Flash Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <span th:text="${errorMessage}">Pesan Kesalahan</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row g-4">
+      
+      <!-- Detail Surat & Data Mahasiswa -->
+      <div class="col-lg-7">
+        <div class="glass-card p-4 p-md-5 mb-4">
+          <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+              <div class="bg-primary-subtle text-primary p-3 rounded-circle fs-4">
+                <i class="bi bi-file-earmark-person"></i>
+              </div>
+              <div>
+                <h4 class="fw-bold mb-0">Data Permohonan</h4>
+                <div class="text-muted small">Nomor Registrasi: <span class="font-monospace fw-bold" th:text="${surat.id}"></span></div>
+              </div>
+            </div>
+            <div>
+              <span class="badge-status" th:classappend="'badge-status-' + ${surat.status.name()}">
+                <i class="bi" th:classappend="${surat.status.name() == 'MENUNGGU_PEMERIKSAAN' ? 'bi-clock-history' : (surat.status.name() == 'DISETUJUI' ? 'bi-check-circle-fill' : 'bi-x-circle-fill')}"></i>
+                <span th:text="${surat.status.label}">Status</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="p-3 bg-light rounded-3">
+                <span class="text-muted small d-block mb-1">Nama Mahasiswa</span>
+                <span class="fw-bold text-dark fs-6" th:text="${surat.nama}">Nama Lengkap</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 bg-light rounded-3">
+                <span class="text-muted small d-block mb-1">Nomor Induk Mahasiswa (NIM)</span>
+                <span class="fw-bold text-dark fs-6 font-monospace" th:text="${surat.nim}">123456789</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 bg-light rounded-3">
+                <span class="text-muted small d-block mb-1">Program Studi</span>
+                <span class="fw-semibold text-dark" th:text="${surat.programStudi != null ? surat.programStudi : '-'}">Informatika</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 bg-light rounded-3">
+                <span class="text-muted small d-block mb-1">Semester</span>
+                <span class="fw-semibold text-dark" th:text="${surat.semester != null ? 'Semester ' + surat.semester : '-'}">5</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 border rounded-3 mb-3 bg-white">
+            <span class="text-muted small d-block mb-1"><i class="bi bi-file-earmark-text text-primary me-1"></i> Jenis Surat Keterangan</span>
+            <h6 class="fw-bold text-primary mb-0" th:text="${surat.jenisSurat}">Surat Keterangan Aktif Kuliah</h6>
+          </div>
+
+          <div class="p-3 border rounded-3 mb-4 bg-white">
+            <span class="text-muted small d-block mb-1"><i class="bi bi-chat-quote text-primary me-1"></i> Alasan / Keperluan Pengajuan</span>
+            <p class="text-dark mb-0 fw-normal" th:text="${surat.keperluan}">Alasan mahasiswa</p>
+          </div>
+
+          <div class="text-muted small d-flex justify-content-between border-top pt-3">
+            <span>Waktu Pengajuan: <strong th:text="${surat.formattedTanggalPengajuan}"></strong></span>
+            <span th:if="${surat.status.name() == 'DISETUJUI'}">
+              <a th:href="@{'/mahasiswa/surat/' + ${surat.id} + '/cetak'}" target="_blank" class="text-decoration-none fw-bold text-success">
+                <i class="bi bi-printer me-1"></i> Preview Surat Resmi
+              </a>
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Form Keputusan Petugas -->
+      <div class="col-lg-5">
+        
+        <!-- Status Info Card jika sudah pernah diproses -->
+        <div th:if="${surat.status.name() != 'MENUNGGU_PEMERIKSAAN'}" class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+          <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-clock-history text-secondary"></i> Riwayat Keputusan Terakhir
+          </h5>
+          <div class="small text-muted mb-2">Petugas Pemeriksa: <strong class="text-dark" th:text="${surat.namaPetugas}">-</strong></div>
+          <div class="small text-muted mb-2">Waktu Keputusan: <strong class="text-dark" th:text="${surat.formattedTanggalPemeriksaan}">-</strong></div>
+          <div class="small text-muted mb-2" th:if="${surat.nomorSuratResmi}">Nomor Surat: <strong class="text-primary font-monospace" th:text="${surat.nomorSuratResmi}">-</strong></div>
+          <div class="p-3 rounded-3 mt-3" th:classappend="${surat.status.name() == 'DISETUJUI' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}">
+            <strong>Catatan Petugas:</strong>
+            <p class="mb-0 mt-1" th:text="${surat.catatanPetugas}">-</p>
+          </div>
+          <p class="text-muted small mt-3 mb-0">
+            Anda dapat memperbarui keputusan kembali di bawah ini jika terdapat perubahan verifikasi.
+          </p>
+        </div>
+
+        <!-- Kartu Aksi Verifikasi Petugas -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+          <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock-fill text-primary"></i> Keputusan Pemeriksaan Petugas
+          </h5>
+          <p class="text-muted small mb-4">
+            Tentukan apakah permohonan disetujui atau ditolak berdasarkan kelengkapan berkas akademik.
+          </p>
+
+          <!-- Nav Tabs untuk Aksi -->
+          <ul class="nav nav-pills nav-fill mb-4 bg-light p-1 rounded-3" id="pemeriksaanTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active rounded-3 py-2 fw-semibold" id="setujui-tab" data-bs-toggle="pill" data-bs-target="#tab-setujui" type="button" role="tab">
+                <i class="bi bi-check-circle me-1 text-success"></i> Setujui Surat
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-3 py-2 fw-semibold" id="tolak-tab" data-bs-toggle="pill" data-bs-target="#tab-tolak" type="button" role="tab">
+                <i class="bi bi-x-circle me-1 text-danger"></i> Tolak Surat
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="pemeriksaanTabContent">
+            
+            <!-- Tab Form Setujui -->
+            <div class="tab-pane fade show active" id="tab-setujui" role="tabpanel">
+              <form th:action="@{'/petugas/setujui/' + ${surat.id}}" method="post">
+                <div class="mb-3">
+                  <label class="form-label">Nama Petugas Pemeriksa</label>
+                  <input type="text" name="namaPetugas" class="form-control" value="Budi Santoso, S.Kom (Bagian Akademik)" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Catatan Persetujuan (Opsional)</label>
+                  <textarea name="catatan" rows="3" class="form-control" placeholder="Contoh: Berkas telah diverifikasi lengkap dan memenuhi kriteria akademik."></textarea>
+                </div>
+                <div class="alert alert-success-subtle border border-success-subtle small mb-4">
+                  <i class="bi bi-info-circle me-1"></i> Sistem akan otomatis menerbitkan Nomor Surat Resmi dan status pengajuan akan berubah menjadi <strong>Disetujui</strong>.
+                </div>
+                <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-check2-circle"></i> Konfirmasi Persetujuan Pengajuan
+                </button>
+              </form>
+            </div>
+
+            <!-- Tab Form Tolak -->
+            <div class="tab-pane fade" id="tab-tolak" role="tabpanel">
+              <form th:action="@{'/petugas/tolak/' + ${surat.id}}" method="post">
+                <div class="mb-3">
+                  <label class="form-label">Nama Petugas Pemeriksa</label>
+                  <input type="text" name="namaPetugas" class="form-control" value="Budi Santoso, S.Kom (Bagian Akademik)" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Alasan Penolakan <span class="text-danger">* (Wajib diisi)</span></label>
+                  <textarea name="alasanPenolakan" rows="4" class="form-control border-danger" 
+                            placeholder="Jelaskan alasan pengajuan ditolak (Contoh: SKS belum mencukupi batas minimum 100 SKS, terdapat tanggungan biaya administrasi, dsb.)" required></textarea>
+                </div>
+                <div class="alert alert-danger-subtle border border-danger-subtle small mb-4">
+                  <i class="bi bi-exclamation-circle me-1"></i> Alasan ini akan langsung tampil di halaman hasil pelacakan mahasiswa agar mahasiswa dapat mengetahui kendala berkasnya.
+                </div>
+                <button type="submit" class="btn btn-danger w-100 py-2 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-x-circle"></i> Konfirmasi Tolak Pengajuan
+                </button>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div th:replace="~{fragments/footer :: footer}"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

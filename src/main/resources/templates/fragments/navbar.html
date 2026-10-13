@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-dark" th:href="@{/}">
+      <div class="brand-badge">
+        <i class="bi bi-file-earmark-text"></i>
+      </div>
+      <div>
+        <span class="fs-5 text-primary">Surat</span><span class="fs-5 text-dark">Mahasiswa</span>
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-2 rounded-pill fw-medium" style="font-size: 0.7rem;">In-Memory ArrayList</span>
+      </div>
+    </a>
+    
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1 align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link" th:classappend="${activePage == 'beranda' or activePage == null} ? 'active' : ''" th:href="@{/}">
+            <i class="bi bi-house-door me-1"></i> Beranda
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:classappend="${activePage == 'pengajuan-baru'} ? 'active' : ''" th:href="@{/mahasiswa/pengajuan/baru}">
+            <i class="bi bi-pencil-square me-1"></i> Ajukan Surat
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:classappend="${activePage == 'lacak-status'} ? 'active' : ''" th:href="@{/mahasiswa/lacak}">
+            <i class="bi bi-search me-1"></i> Lacak Status
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:classappend="${activePage == 'bpmn'} ? 'active' : ''" th:href="@{/bpmn}">
+            <i class="bi bi-diagram-3 me-1"></i> Alur BPMN
+          </a>
+        </li>
+        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+          <a class="btn btn-outline-primary rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2" th:href="@{/petugas}">
+            <i class="bi bi-shield-check"></i> Panel Petugas
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+</body>
+</html>
